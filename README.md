@@ -27,20 +27,23 @@ multi-agent-systems/
 ├── tools/                 # Shared utilities and tools
 │   ├── mcp/               # MCP-related tools
 │   └── utils/             # General-purpose utilities
+├── environment/           # Shared environment definitions
+│   ├── grid_world.py
+│   ├── warehouse.py
+│   └── ...
+├── tasks/                 # Task definitions applicable to all MAS architectures
+│   ├── foraging.py
+│   ├── search_and_rescue.py
+│   ├── warehouse_fulfillment.py
+│   └── ...
 ├── mas_hierarchical/      # Hierarchical MAS implementation
 │   ├── agents/
-│   ├── environment/
-│   ├── tasks/
 │   └── main.py
 ├── mas_flat/              # Flat MAS implementation
 │   ├── agents/
-│   ├── environment/
-│   ├── tasks/
 │   └── main.py
 ├── mas_auction/           # Auction-based MAS implementation
 │   ├── agents/
-│   ├── environment/
-│   ├── tasks/
 │   └── main.py
 ├── evaluations/           # Evaluation scripts and configurations
 │   ├── foraging/
@@ -56,6 +59,7 @@ multi-agent-systems/
     ├── architecture/
     ├── evaluations/
     └── ...
+
 ```
 
 ## Different MAS to build 
