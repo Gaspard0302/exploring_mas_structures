@@ -1,0 +1,9 @@
+numpy==1.24.3
+gym==0.26.2
+matplotlib==3.7.1 
+langchain
+python-dotenv==1.0.1
+openai==1.14.0
+mesa==2.1.1
+spade==3.3.0
+langgraph==0.0.27
