@@ -115,30 +115,38 @@ Format your response as JSON:
 You are AGENT {agent_name} with expertise in route optimization.
 
 ASSIGNMENT:
-Your leader has assigned you these cities to visit: {agent_cities}
-City indices: {city_indices}
+Your leader has assigned you these {len(agent_cities)} cities to visit:
+"""
+        
+        # Add clear city mapping
+        for idx, (x, y) in enumerate(agent_cities):
+            agent_prompt += f"  City {idx}: position ({x}, {y})\n"
+        
+        agent_prompt += f"""
+IMPORTANT: You are working with LOCAL indices 0, 1, 2, ..., {len(agent_cities)-1} for your assigned cities.
 
 TASK:
 Plan the optimal route through your assigned cities to minimize travel distance.
 
 Consider:
-1. Which city should you start from?
+1. Which city should you start from? (use local index 0-{len(agent_cities)-1})
 2. What's the most efficient order to visit all cities?
-3. How would you optimize this route?
+3. How would you optimize this route to minimize total distance?
 
 Think through different route options and explain your reasoning.
 
-Respond with:
-1. Your reasoning process
-2. Optimal route as a list of city indices in visit order
-3. Estimated total distance
+EXAMPLE:
+If you have 3 cities [City 0, City 1, City 2], a good route might be [0, 2, 1] meaning:
+visit City 0 first, then City 2, then City 1.
 
-Format as JSON:
+Respond EXACTLY in this JSON format:
 {{
-    "reasoning": "your step-by-step reasoning",
-    "route": [ordered_list_of_city_indices],
+    "reasoning": "your step-by-step reasoning about the optimal route",
+    "route": [list_of_local_indices_from_0_to_{len(agent_cities)-1}],
     "estimated_distance": your_distance_estimate
 }}
+
+CRITICAL: The route array must contain exactly {len(agent_cities)} integers, each between 0 and {len(agent_cities)-1}, with no duplicates.
 """
         
         agent_response = llm.call_llm(
@@ -146,38 +154,77 @@ Format as JSON:
             agent_type="follower",
             call_type="route_planning",
             prompt=agent_prompt,
-            context={"assigned_cities": city_indices, "coordinates": agent_cities}
+            context={"assigned_cities": city_indices, "coordinates": agent_cities, "local_city_count": len(agent_cities)}
         )
         
-        # Parse agent's route decision
+        # Parse agent's route decision with improved error handling
         try:
             agent_decision = json.loads(agent_response)
             planned_route = agent_decision.get("route", list(range(len(city_indices))))
             reasoning = agent_decision.get("reasoning", "No reasoning provided")
+            
+            # Debug: Print what we received
+            print(f"Debug: Agent {agent_name} returned route: {planned_route} for {len(city_indices)} cities")
+            
         except json.JSONDecodeError:
             # Fallback to algorithmic route
             planned_route, _ = TSPUtils.nearest_neighbor_tsp(agent_cities)
             reasoning = "Fallback to algorithmic routing due to parsing error"
+            print(f"Debug: Agent {agent_name} JSON parsing failed, using algorithmic route: {planned_route}")
         
-        # Convert local route indices to global city indices
-        if len(planned_route) == len(city_indices) and all(isinstance(x, int) and 0 <= x < len(city_indices) for x in planned_route):
-            global_route = [city_indices[j] for j in planned_route]
+        # Improved validation and conversion logic
+        global_route = city_indices  # Default fallback
+        route_valid = False
+        
+        if isinstance(planned_route, list) and len(planned_route) == len(city_indices):
+            # Check if it's already local indices (expected format)
+            if all(isinstance(x, int) and 0 <= x < len(city_indices) for x in planned_route):
+                # Check for duplicates (should be a permutation)
+                if len(set(planned_route)) == len(planned_route):
+                    global_route = [city_indices[j] for j in planned_route]
+                    route_valid = True
+                    print(f"Debug: Agent {agent_name} returned valid local indices: {planned_route}")
+                else:
+                    print(f"Debug: Agent {agent_name} returned duplicate indices: {planned_route}")
+            
+            # Check if it might be global indices matching our assigned cities
+            elif all(isinstance(x, int) and x in city_indices for x in planned_route):
+                # Reorder to match the sequence they want
+                if len(set(planned_route)) == len(planned_route):  # No duplicates
+                    global_route = planned_route
+                    route_valid = True
+                    print(f"Debug: Agent {agent_name} returned valid global indices: {planned_route}")
+                else:
+                    print(f"Debug: Agent {agent_name} returned duplicate global indices: {planned_route}")
+            else:
+                print(f"Debug: Agent {agent_name} returned invalid indices: {planned_route} (expected 0-{len(city_indices)-1} or {city_indices})")
         else:
-            # If route format is wrong, use original order
-            global_route = city_indices
+            print(f"Debug: Agent {agent_name} returned wrong format - expected list of {len(city_indices)} integers, got: {planned_route}")
+        
+        if not route_valid:
             print(f"Warning: Agent {agent_name} returned invalid route format, using original order")
+            print(f"  Expected: local indices 0-{len(city_indices)-1} or global indices {city_indices}")
+            print(f"  Received: {planned_route}")
         
         # Calculate actual distance
         if len(agent_cities) <= 1:
             actual_distance = 0
         else:
-            # Reorder cities according to planned route and calculate distance
-            if len(planned_route) == len(agent_cities) and all(isinstance(x, int) and 0 <= x < len(agent_cities) for x in planned_route):
-                route_cities = [agent_cities[j] for j in planned_route]
-                actual_distance = TSPUtils.calculate_route_distance(route_cities, list(range(len(route_cities))))
+            # Calculate distance based on the final global route
+            if route_valid and isinstance(planned_route, list) and len(planned_route) == len(agent_cities):
+                # If we have valid local indices, use them to reorder agent_cities
+                if all(isinstance(x, int) and 0 <= x < len(agent_cities) for x in planned_route):
+                    route_cities = [agent_cities[j] for j in planned_route]
+                    actual_distance = TSPUtils.calculate_route_distance(route_cities, list(range(len(route_cities))))
+                    print(f"Debug: Agent {agent_name} distance calculated from optimized route: {actual_distance:.2f}")
+                else:
+                    # Fallback to original order
+                    actual_distance = TSPUtils.calculate_route_distance(agent_cities, list(range(len(agent_cities))))
+                    print(f"Debug: Agent {agent_name} distance calculated from original order: {actual_distance:.2f}")
             else:
                 # Fallback to using cities in original order
                 actual_distance = TSPUtils.calculate_route_distance(agent_cities, list(range(len(agent_cities))))
+                print(f"Debug: Agent {agent_name} distance calculated from fallback order: {actual_distance:.2f}")
         
         agent_assignments[agent_name] = city_indices
         agent_routes[agent_name] = global_route
