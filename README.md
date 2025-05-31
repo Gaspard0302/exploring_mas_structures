@@ -1,175 +1,241 @@
-# Project Roadmap
-🧱 Foundational Setup
+# LLM-Powered Multi-Agent System Evaluation
 
-1. Define Agent Roles and Interactions
-- Hierarchical MAS: Establish a supervisor agent that delegates tasks to subordinate agents.
-- Flat MAS: Design agents with equal authority, communicating peer-to-peer.
-- Auction-Based MAS: Implement agents that bid for tasks, with an auctioneer managing allocations.
+A comprehensive research framework for studying how **LLM agents collaborate** in different organizational structures. This project evaluates Hierarchical, Flat, and Auction-based multi-agent systems using **actual LLM reasoning** to understand AI collaboration patterns and their parallels to human organizational behavior.
 
+## 🎯 Research Focus
 
-2. Select Appropriate Frameworks
-- Mesa: Ideal for agent-based modeling and simulations.
-- Spade: Supports asynchronous agent communication using the XMPP protocol.
-- LangGraph: Facilitates hierarchical agent workflows with state management.
-- Agentis MCP: Enables MCP integration for tool management.
+**Core Question**: Which organizational structure (Hierarchical, Flat, or Auction-based) produces the most effective LLM agent collaboration?
 
-3. Integrate MCP for Tool Management
-- OpenAI Agents SDK: Provides MCP support for connecting agents to external tools.
-- Google ADK: Offers a framework for building AI agents with MCP tool integration.
+### Primary Research Objectives
+- **Solution Quality**: Which architecture finds the best solutions?
+- **Communication Efficiency**: How do message patterns differ between structures?
+- **Cost Analysis**: What are the computational costs (LLM calls, tokens, money) of each approach?
+- **Collaboration Patterns**: How do LLM agents naturally coordinate and negotiate?
+- **Human Parallels**: How do AI collaboration patterns compare to human organizational behavior?
 
-## Repository Structure
+## 🏗️ Architecture Implementations
+
+### 1. **Hierarchical MAS**
+- **Leader agent** analyzes problems and creates strategic plans using LLM reasoning
+- **Follower agents** receive assignments and optimize solutions with LLM planning
+- **Top-down coordination** with clear command structure
+- *Similar to*: Corporate hierarchies, military command structures
+
+### 2. **Flat MAS (Peer-to-Peer)**
+- **Equal agents** negotiate directly using natural language arguments
+- **Multi-round negotiation** with strategic reasoning and conflict resolution
+- **Distributed decision-making** through LLM mediation
+- *Similar to*: Academic collaborations, democratic decision-making
+
+### 3. **Auction-Based MAS**
+- **Strategic bidders** with different personalities (Conservative, Aggressive, etc.)
+- **LLM auctioneer** evaluates bids based on merit AND amount
+- **Competitive resource allocation** with reasoned bidding strategies
+- *Similar to*: Market-based allocation, competitive environments
+
+## 🚀 Quick Start
+
+### 1. Setup
+```bash
+# Clone repository
+git clone <repository-url>
+cd multi-agent-systems
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Setup API key configuration
+cp config_template.py config.py
+# Edit config.py and set your OpenAI API key
+```
+
+### 2. Configure API Key
+Edit `config.py`:
+```python
+OPENAI_API_KEY = "your-openai-api-key-here"
+```
+
+**Alternative**: Set environment variable
+```bash
+export OPENAI_API_KEY="your-openai-api-key-here"
+```
+
+### 3. Test Installation
+```bash
+# Test basic functionality
+python test_llm_tsp.py
+```
+
+### 4. Run Evaluation
+```bash
+# Quick test (single scenario)
+python -m evaluations.tsp.llm_main --quick
+
+# Full evaluation (multiple scenarios)
+python -m evaluations.tsp.llm_main
+
+# Without saving detailed logs
+python -m evaluations.tsp.llm_main --no-save
+```
+
+## 📊 What Gets Evaluated
+
+### Traveling Salesman Problem (TSP) Collaboration
+**Scenario**: Multiple agents must collaboratively solve a TSP where N cities need to be visited by M agents, minimizing total travel distance.
+
+**LLM Integration**: 
+- Agents use natural language reasoning to analyze city patterns
+- Strategic thinking for route optimization and resource allocation
+- Natural language negotiation and conflict resolution
+- Reflection on collaboration effectiveness
+
+### Comprehensive Logging
+Every aspect of agent collaboration is tracked:
+- **All LLM calls** with prompts, responses, timing, and costs
+- **Agent communications** with message types and strategic reasoning
+- **Performance metrics** for each architecture
+- **Meta-analysis** by LLM of collaboration effectiveness
+
+## 📈 Output and Analysis
+
+### Real-Time Progress
+```
+🤖 Starting LLM-Powered Multi-Agent TSP Evaluation
+✅ LLM Connection Test: OK
+
+📍 Scenario 1/3: Small_Clustered
+   🏗️ Running Hierarchical MAS...
+      ✅ Distance: 15.23, Comm: 8, LLM Calls: 12, Cost: $0.087, Time: 23.4s
+   🏗️ Running Flat MAS...
+      ✅ Distance: 16.45, Comm: 24, LLM Calls: 28, Cost: $0.203, Time: 41.2s
+   🏗️ Running Auction MAS...
+      ✅ Distance: 17.12, Comm: 19, LLM Calls: 22, Cost: $0.156, Time: 35.7s
+```
+
+### Generated Files
+```
+results/llm_tsp/
+├── llm_evaluation_YYYYMMDD_HHMMSS.json    # Complete results
+└── logs/
+    └── session_YYYYMMDD_HHMMSS/
+        ├── llm_calls.json                  # All LLM interactions
+        ├── communications.json             # Agent messages
+        └── session_summary.json           # Session statistics
+```
+
+### Performance Analysis
+```
+🏆 Performance Rankings (Average Distance):
+   1. Hierarchical: 15.67 (±1.23)
+   2. Flat: 16.89 (±2.45)  
+   3. Auction: 17.34 (±1.87)
+
+💰 Cost Analysis:
+   Hierarchical: $0.092 per scenario, 11.3 messages
+   Flat: $0.198 per scenario, 23.7 messages
+   Auction: $0.154 per scenario, 18.2 messages
+```
+
+### LLM-Generated Insights
+The system uses an LLM analyst to generate comprehensive insights:
+- Comparative analysis of collaboration effectiveness
+- Communication pattern analysis
+- Cost-benefit trade-offs
+- Recommendations for optimal conditions
+- Parallels to human organizational behavior
+
+## 🔬 Research Applications
+
+### Academic Research
+- **Multi-agent system design principles**
+- **AI collaboration effectiveness studies**
+- **Computational cost analysis of LLM-based systems**
+- **Comparative organizational behavior research**
+
+### Practical Applications
+- **Optimal team structures** for AI agent deployment
+- **Cost-effective LLM usage** in collaborative systems
+- **Communication protocol design** for AI teams
+- **Scalability planning** for enterprise AI systems
+
+## 📊 Project Structure
 
 ```
 multi-agent-systems/
-├── README.md
-├── requirements.txt
-├── .gitignore
-├── tools/                 # Shared utilities and tools
-│   ├── mcp/               # MCP-related tools
-│   └── utils/             # General-purpose utilities
-├── environment/           # Shared environment definitions
-│   ├── grid_world.py
-│   ├── warehouse.py
-│   └── ...
-├── tasks/                 # Task definitions applicable to all MAS architectures
-│   ├── foraging.py
-│   ├── search_and_rescue.py
-│   ├── warehouse_fulfillment.py
-│   └── ...
-├── mas_hierarchical/      # Hierarchical MAS implementation
-│   ├── agents/
-│   └── main.py
-├── mas_flat/              # Flat MAS implementation
-│   ├── agents/
-│   └── main.py
-├── mas_auction/           # Auction-based MAS implementation
-│   ├── agents/
-│   └── main.py
-├── evaluations/           # Evaluation scripts and configurations
-│   ├── foraging/
-│   ├── search_and_rescue/
-│   ├── warehouse_fulfillment/
-│   └── ...
-├── results/               # Logs, metrics, and plots
-│   ├── foraging/
-│   ├── search_and_rescue/
-│   ├── warehouse_fulfillment/
-│   └── ...
-└── docs/                  # Documentation and reports
-    ├── architecture/
-    ├── evaluations/
-    └── ...
-
+├── README.md                            # This file
+├── requirements.txt                     # Python dependencies
+├── config_template.py                   # Configuration template
+├── config.py                           # Your configuration (gitignored)
+├── test_llm_tsp.py                     # Quick test script
+│
+├── evaluations/tsp/                     # TSP evaluation module
+│   ├── llm_main.py                     # Main evaluation runner
+│   ├── llm_integration.py              # LLM integration & logging
+│   ├── llm_hierarchical_tsp.py         # Hierarchical LLM agents
+│   ├── llm_flat_tsp.py                 # Flat/P2P LLM agents
+│   ├── llm_auction_tsp.py              # Auction LLM agents
+│   ├── utils.py                        # TSP utilities
+│   └── metrics.py                      # Performance metrics
+│
+├── mas_hierarchical/                    # Original agent implementations
+├── mas_flat/                           # (for reference/comparison)
+├── mas_auction/                        
+│
+├── results/                            # Generated results (gitignored)
+├── logs/                              # Generated logs (gitignored)
+└── docs/                              # Documentation
+    └── LLM_TSP_EVALUATION.md          # Detailed evaluation docs
 ```
 
-## Different MAS to build 
+## 🔧 Configuration Options
 
-### A. Hierarchical MAS
-Objective: Implement a supervisor agent that assigns tasks to specialized subordinate agents.
-AIMultiple
+Edit `config.py` to customize:
 
-Steps:
+```python
+# Model selection (impacts cost and quality)
+DEFAULT_LLM_MODEL = "gpt-4"          # Best quality
+# DEFAULT_LLM_MODEL = "gpt-3.5-turbo" # Cost savings
 
-- Design the Hierarchy: Define the supervisor and subordinate agents with clear responsibilities.
-- Implement Communication: Use frameworks like LangGraph or Spade to manage interactions.
-- Integrate Tools via MCP: Connect agents to necessary tools using MCP servers.
+# Response creativity (0.0 = deterministic, 1.0 = creative)
+LLM_TEMPERATURE = 0.7
 
-Example: A supervisor agent assigns content creation to a writer agent and editing to an editor agent, coordinating the workflow.
+# Cost tracking (update with current OpenAI pricing)
+COST_PER_1K_TOKENS = 0.045
+```
 
-### B. Flat MAS
-Objective: Develop agents operating at the same hierarchical level, collaborating to achieve tasks.
+## ⚠️ Important Considerations
 
-Steps:
+### Cost Management
+- **LLM API calls can be expensive** - start with `--quick` flag
+- Monitor token usage and costs during development
+- Consider using `gpt-3.5-turbo` for cost savings during testing
 
-- Define Agent Capabilities: Ensure each agent can perform tasks independently.
-- Establish Communication Protocols: Use peer-to-peer communication mechanisms.
-- Tool Integration: Equip agents with necessary tools via MCP.
+### API Requirements
+- **OpenAI API key required** - get one at [platform.openai.com](https://platform.openai.com)
+- Ensure sufficient API credits for evaluation runs
+- Rate limits may affect larger evaluations
 
+### Result Variability
+- LLM responses may vary between runs (controlled by temperature)
+- JSON parsing failures are handled with algorithmic fallbacks
+- Multiple runs recommended for statistical significance
 
-### C. Auction-Based MAS
-Objective: Implement a system where agents bid for tasks, with an auctioneer facilitating the process.
+## 🤝 Contributing
 
-Steps:
+This research framework is designed for:
+- **AI researchers** studying collaboration patterns
+- **Organizational behavior scientists** comparing AI to human teams  
+- **Multi-agent system developers** optimizing team structures
+- **LLM application developers** understanding coordination costs
 
-- Design Auction Protocol: Define bidding rules and winner selection criteria.
-- Implement Agents: Develop bidder and auctioneer agents using frameworks like Spade.
-- Integrate Tools via MCP: Provide agents with tools necessary for task execution.
+## 📄 License
 
+[Add your license here]
 
+## 🙏 Acknowledgments
 
-## Possible Evalutaions / tests for the different MAS
+Built for research into AI collaboration patterns and their relationship to human organizational behavior.
 
-#### 1. Cooperative Foraging
+---
 
-Description: Agents collect "food" items scattered in an environment and deposit them at a home base, requiring task allocation and coordination.
-
-- **Ease: Easy** – can be prototyped in Mesa within a few hours. galileo.ai
-- **Interestingness: 3/5** – classic benchmark for emergent collaboration but limited complexity. galileo.ai
-
-#### 2. Search & Rescue Simulation
-
-Description: A top-level coordinator assigns regions to scout agents; scouts report back targets (e.g., "victims") to a rescue team.
-
-- **Ease: Medium** – requires environment setup and hierarchical messaging (e.g., SPADE or LangGraph). medium.com
-- **Interestingness: 5/5** – tests decomposition, fault tolerance, and dynamic task reallocation. blog.spheron.network
-
-
-
-#### 3. Distributed Sensor Coverage
-
-Description: Peer agents position themselves to maximize coverage of an area while avoiding overlap, sharing local field data.
-
-- **Ease: Medium** – implementable in Mesa with simple P2P messaging 
-galileo.ai
-- **Interestingness: 4/5** – highlights flat MAS strengths in decentralized information sharing 
-galileo.ai
-
-
-#### 4. Warehouse Order Fulfillment (Auction-Style)
-
-Description: Delivery agents bid on "pick-and-place" tasks (orders) based on distance or capacity; an auctioneer assigns orders to highest bids.
-
-- **Ease: Medium** – bidding logic plus an auctioneer agent; can leverage Greedy Coalition Auction Algorithm (GCAA) 
-arxiv.org
-- **Interestingness: 5/5** – realistic logistics scenario that stresses bidding strategies and dynamic reallocation 
-martinbraquet.com
-
-
-#### 5. Multi-Agent Pathfinding (MAPF)
-
-Description: Agents plan collision-free paths to distinct goals on a grid; performance measured by makespan or total travel time.
-
-- **Ease: Hard** – requires implementation of MAPF algorithms or auction mapping (combinatorial auctions) 
-ojs.aaai.org
-- **Interestingness: 5/5** – rigorous test of coordination under tight constraints and algorithmic efficiency
-ojs.aaai.org
-
-
-#### 6. Resource Allocation via DCOP
-
-Description: Agents jointly solve a Distributed Constraint Optimization Problem, e.g., assign time slots or channels minimizing interference.
-
-- **Ease: Hard** – needs DCOP solver integration (e.g., PyDCOP) and constraint formulation 
-galileo.ai
-- **Interestingness: 4/5** – showcases global optimization under local agent autonomy 
-galileo.ai
-
-
-
-#### 7. Dynamic Task Allocation Stress Test
-
-Description: A continuous stream of tasks arrives unpredictably; agents must bid (auction), coordinate (flat), or follow chain-of-command (hierarchical) to process tasks.
-
-- **Ease: Medium** – builds on auction and hierarchical templates, plus task generator 
-dl.acm.org
-- **Interestingness: 5/5** – evaluates adaptability, throughput, and robustness under load 
-dl.acm.org
-
-
-####  8. Fault-Recovery & Resilience Drill
-
-Description: Introduce random agent failures or misinformation; measure system's ability to detect, reassign tasks, and recover.
-
-- **Ease: Medium** – inject failure events and implement monitoring logs 
-arxiv.org
-- **Interestingness: 4/5** – critical for real-world readiness and structural resilience
+**Ready to explore how AI agents collaborate?** Start with the quick test and dive into the fascinating world of LLM-powered multi-agent collaboration! 🤖🤝
